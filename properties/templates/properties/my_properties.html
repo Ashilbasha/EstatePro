@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Properties | EstatePro</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f5f7fa;
+            color: #253247;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .main-container {
+            max-width: 1400px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 27px;
+            font-weight: 700;
+            color: #172b4d;
+            margin-bottom: 6px;
+        }
+
+        .page-subtitle {
+            color: #718096;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .btn-add {
+            background: #1e3a5f;
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .btn-add:hover {
+            background: #142b48;
+            color: white;
+        }
+
+        /* STATISTICS */
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e8edf3;
+            border-radius: 8px;
+            padding: 21px;
+            height: 100%;
+            position: relative;
+        }
+
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            border-radius: 8px 8px 0 0;
+            background: #1e3a5f;
+        }
+
+        .stat-card.available::before {
+            background: #198754;
+        }
+
+        .stat-card.sold::before {
+            background: #dc3545;
+        }
+
+        .stat-card.rented::before {
+            background: #0d6efd;
+        }
+
+        .stat-card.maintenance::before {
+            background: #d69e00;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .stat-number {
+            font-size: 29px;
+            font-weight: 700;
+            margin: 0;
+            color: #172b4d;
+        }
+
+        /* FILTER PANEL */
+
+        .filter-panel {
+            background: white;
+            border: 1px solid #e8edf3;
+            border-radius: 9px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+
+        .filter-heading {
+            color: #172b4d;
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .filter-label {
+            color: #475569;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .filter-panel .form-select,
+        .filter-panel .form-control {
+            border: 1px solid #dce3eb;
+            border-radius: 6px;
+            font-size: 14px;
+            min-height: 42px;
+        }
+
+        .filter-panel .form-select:focus,
+        .filter-panel .form-control:focus {
+            border-color: #1e3a5f;
+            box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1);
+        }
+
+        .btn-filter {
+            background: #1e3a5f;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            min-height: 42px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-filter:hover {
+            background: #142b48;
+            color: white;
+        }
+
+        .btn-reset {
+            border: 1px solid #dce3eb;
+            color: #475569;
+            background: white;
+            border-radius: 6px;
+            min-height: 42px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .btn-reset:hover {
+            background: #f1f5f9;
+            color: #253247;
+        }
+
+        /* PROPERTY CARDS */
+
+        .section-heading {
+            font-size: 20px;
+            font-weight: 700;
+            color: #172b4d;
+        }
+
+        .section-description {
+            color: #718096;
+            font-size: 13px;
+        }
+
+        .property-card {
+            background: white;
+            border: 1px solid #e8edf3;
+            border-radius: 9px;
+            overflow: hidden;
+            height: 100%;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .property-card:hover {
+            box-shadow: 0 8px 22px rgba(23, 43, 77, 0.09);
+        }
+
+        .property-image,
+        .no-image {
+            width: 100%;
+            height: 210px;
+        }
+
+        .property-image {
+            object-fit: cover;
+        }
+
+        .no-image {
+            background: #edf1f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8492a6;
+            font-size: 14px;
+        }
+
+        .property-body {
+            padding: 20px;
+        }
+
+        .property-title {
+            color: #172b4d;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .property-city {
+            color: #718096;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .property-price {
+            font-size: 22px;
+            color: #1e3a5f;
+            font-weight: 700;
+            margin-bottom: 17px;
+        }
+
+        .property-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 9px 0;
+            border-top: 1px solid #edf0f4;
+            font-size: 13px;
+            gap: 10px;
+        }
+
+        .detail-label {
+            color: #718096;
+        }
+
+        .detail-value {
+            color: #334155;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .property-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 18px;
+        }
+
+        .property-actions a {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 9px 5px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .btn-details {
+            color: #1e3a5f;
+            border: 1px solid #1e3a5f;
+            background: white;
+            text-decoration: none;
+        }
+
+        .btn-details:hover {
+            background: #1e3a5f;
+            color: white;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            padding: 5px 9px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .empty-box {
+            background: white;
+            border: 1px solid #e8edf3;
+            border-radius: 9px;
+            padding: 55px 20px;
+            text-align: center;
+        }
+
+        @media (max-width: 767px) {
+            .page-header {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 18px;
+            }
+
+            .page-title {
+                font-size: 23px;
+            }
+
+            .property-actions {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container main-container py-5">
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-header">
+
+        <div>
+            <h2 class="page-title">My Properties</h2>
+
+            <p class="page-subtitle">
+                Manage, monitor and maintain your property listings.
+            </p>
+        </div>
+
+        <a href="{% url 'add_property' %}" class="btn-add">
+            + Add New Property
+        </a>
+
+    </div>
+
+
+    <!-- PROPERTY STATISTICS -->
+
+    <div class="row g-3 mb-5">
+
+        <div class="col-6 col-md-4 col-lg">
+            <div class="stat-card">
+                <p class="stat-label">TOTAL PROPERTIES</p>
+                <h3 class="stat-number">{{ total_properties }}</h3>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg">
+            <div class="stat-card available">
+                <p class="stat-label">AVAILABLE</p>
+                <h3 class="stat-number text-success">
+                    {{ available_properties }}
+                </h3>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg">
+            <div class="stat-card sold">
+                <p class="stat-label">SOLD</p>
+                <h3 class="stat-number text-danger">
+                    {{ sold_properties }}
+                </h3>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg">
+            <div class="stat-card rented">
+                <p class="stat-label">RENTED</p>
+                <h3 class="stat-number text-primary">
+                    {{ rented_properties }}
+                </h3>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg">
+            <div class="stat-card maintenance">
+                <p class="stat-label">MAINTENANCE</p>
+                <h3 class="stat-number" style="color:#d69e00;">
+                    {{ maintenance_properties }}
+                </h3>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH, FILTER AND SORT -->
+
+    <div class="filter-panel">
+
+        <h5 class="filter-heading">
+            Search, Filter & Sort Properties
+        </h5>
+
+        <form method="GET" action="{% url 'my_properties' %}">
+
+            <div class="row g-3 align-items-end">
+
+                <!-- SEARCH -->
+
+                <div class="col-12">
+
+                    <label class="filter-label" for="propertySearch">
+                        Search Properties
+                    </label>
+
+                    <input
+                        type="text"
+                        id="propertySearch"
+                        name="search"
+                        class="form-control"
+                        placeholder="Search by title, city or address"
+                        value="{{ search_query }}"
+                    >
+
+                </div>
+
+
+                <!-- STATUS FILTER -->
+
+                <div class="col-md-6 col-lg-3">
+
+                    <label class="filter-label">
+                        Property Status
+                    </label>
+
+                    <select name="status" class="form-select">
+
+                        <option value="">All Statuses</option>
+
+                        <option value="available"
+                            {% if status_filter == 'available' %}selected{% endif %}>
+                            Available
+                        </option>
+
+                        <option value="rented"
+                            {% if status_filter == 'rented' %}selected{% endif %}>
+                            Rented
+                        </option>
+
+                        <option value="sold"
+                            {% if status_filter == 'sold' %}selected{% endif %}>
+                            Sold
+                        </option>
+
+                        <option value="maintenance"
+                            {% if status_filter == 'maintenance' %}selected{% endif %}>
+                            Under Maintenance
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- PROPERTY TYPE FILTER -->
+
+                <div class="col-md-6 col-lg-3">
+
+                    <label class="filter-label">
+                        Property Type
+                    </label>
+
+                    <select name="property_type" class="form-select">
+
+                        <option value="">All Property Types</option>
+
+                        <option value="house"
+                            {% if type_filter == 'house' %}selected{% endif %}>
+                            House
+                        </option>
+
+                        <option value="apartment"
+                            {% if type_filter == 'apartment' %}selected{% endif %}>
+                            Apartment
+                        </option>
+
+                        <option value="land"
+                            {% if type_filter == 'land' %}selected{% endif %}>
+                            Land
+                        </option>
+
+                        <option value="commercial"
+                            {% if type_filter == 'commercial' %}selected{% endif %}>
+                            Commercial
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- SORTING -->
+
+                <div class="col-md-6 col-lg-3">
+
+                    <label class="filter-label">
+                        Sort By
+                    </label>
+
+                    <select name="sort" class="form-select">
+
+                        <option value="newest"
+                            {% if sort_by == 'newest' %}selected{% endif %}>
+                            Newest First
+                        </option>
+
+                        <option value="oldest"
+                            {% if sort_by == 'oldest' %}selected{% endif %}>
+                            Oldest First
+                        </option>
+
+                        <option value="price_low"
+                            {% if sort_by == 'price_low' %}selected{% endif %}>
+                            Price: Low to High
+                        </option>
+
+                        <option value="price_high"
+                            {% if sort_by == 'price_high' %}selected{% endif %}>
+                            Price: High to Low
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- BUTTONS -->
+
+                <div class="col-md-6 col-lg-3">
+
+                    <div class="d-flex gap-2">
+
+                        <button
+                            type="submit"
+                            class="btn btn-filter flex-fill"
+                        >
+                            Apply Filters
+                        </button>
+
+                        <a
+                            href="{% url 'my_properties' %}"
+                            class="btn btn-reset d-flex align-items-center justify-content-center flex-fill"
+                        >
+                            Reset
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- PROPERTY LISTINGS -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+
+        <div>
+
+            <h4 class="section-heading mb-1">
+                Property Listings
+            </h4>
+
+            <p class="section-description mb-0">
+                Overview of all properties registered under your account.
+            </p>
+
+        </div>
+
+        <span class="badge text-bg-light border px-3 py-2">
+            {{ properties|length }} Matching Listings
+        </span>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        {% for property in properties %}
+
+        <div class="col-md-6 col-lg-4">
+
+            <div class="property-card">
+
+                {% if property.image %}
+
+                    <img
+                        src="{{ property.image.url }}"
+                        class="property-image"
+                        alt="{{ property.title }}"
+                    >
+
+                {% else %}
+
+                    <div class="no-image">
+                        Image Not Available
+                    </div>
+
+                {% endif %}
+
+
+                <div class="property-body">
+
+                    <h5 class="property-title">
+                        {{ property.title }}
+                    </h5>
+
+                    <p class="property-city">
+                        {{ property.city }}
+                    </p>
+
+                    <h4 class="property-price">
+                        ₹{{ property.price|floatformat:0 }}
+                    </h4>
+
+
+                    <div class="property-detail">
+
+                        <span class="detail-label">
+                            Property Type
+                        </span>
+
+                        <span class="detail-value">
+                            {{ property.get_property_type_display }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="property-detail">
+
+                        <span class="detail-label">
+                            Area
+                        </span>
+
+                        <span class="detail-value">
+                            {{ property.area_sqft }} sq.ft.
+                        </span>
+
+                    </div>
+
+
+                    <div class="property-detail">
+
+                        <span class="detail-label">
+                            Status
+                        </span>
+
+                        <span>
+
+                            {% if property.status == 'available' %}
+
+                                <span class="status-badge bg-success text-white">
+                                    Available
+                                </span>
+
+                            {% elif property.status == 'rented' %}
+
+                                <span class="status-badge bg-primary text-white">
+                                    Rented
+                                </span>
+
+                            {% elif property.status == 'sold' %}
+
+                                <span class="status-badge bg-danger text-white">
+                                    Sold
+                                </span>
+
+                            {% elif property.status == 'maintenance' %}
+
+                                <span class="status-badge bg-warning text-dark">
+                                    Maintenance
+                                </span>
+
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- ACTION BUTTONS -->
+
+                    <div class="property-actions">
+
+                        <a
+                            href="{% url 'property_detail' property.id %}"
+                            class="btn btn-details"
+                        >
+                            View
+                        </a>
+
+                        <a
+                            href="{% url 'edit_property' property.id %}"
+                            class="btn btn-primary"
+                        >
+                            Edit
+                        </a>
+
+                        <a
+                            href="{% url 'delete_property' property.id %}"
+                            class="btn btn-outline-danger"
+                        >
+                            Delete
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <div class="col-12">
+
+            <div class="empty-box">
+
+                {% if total_properties > 0 %}
+
+                    <h4 class="fw-bold">
+                        No Matching Properties
+                    </h4>
+
+                    <p class="text-muted">
+                        No properties match your search or selected filters.
+                        Try changing your search or filters.
+                    </p>
+
+                    <a
+                        href="{% url 'my_properties' %}"
+                        class="btn btn-primary"
+                    >
+                        Clear Search & Filters
+                    </a>
+
+                {% else %}
+
+                    <h4 class="fw-bold">
+                        No Properties Found
+                    </h4>
+
+                    <p class="text-muted">
+                        You haven't registered any properties yet.
+                    </p>
+
+                    <a
+                        href="{% url 'add_property' %}"
+                        class="btn btn-primary"
+                    >
+                        Add Your First Property
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

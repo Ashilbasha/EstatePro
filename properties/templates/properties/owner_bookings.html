@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Manage Bookings | EstatePro</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <style>
+        body {
+            background: #f4f6fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background: #142b4a;
+        }
+
+        .navbar-brand {
+            color: white;
+            font-weight: 700;
+        }
+
+        .page-title {
+            color: #142b4a;
+            font-weight: 700;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            height: 100%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #142b4a;
+        }
+
+        .booking-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .property-title {
+            color: #142b4a;
+            font-weight: 700;
+        }
+
+        .status {
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .status-cancelled {
+            background: #e2e3e5;
+            color: #41464b;
+        }
+
+        .status-completed {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .filter-card {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .btn-primary {
+            background: #142b4a;
+            border-color: #142b4a;
+        }
+
+        .btn-primary:hover {
+            background: #203e65;
+        }
+
+        .empty-state {
+            background: white;
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+
+        <a class="navbar-brand" href="{% url 'home' %}">
+            EstatePro
+        </a>
+
+        <div class="d-flex gap-2">
+
+            <a href="{% url 'my_properties' %}"
+               class="btn btn-outline-light btn-sm">
+                My Properties
+            </a>
+
+            <a href="{% url 'home' %}"
+               class="btn btn-outline-light btn-sm">
+                Home
+            </a>
+
+        </div>
+
+    </div>
+</nav>
+
+
+<div class="container py-5">
+
+    <!-- PAGE HEADER -->
+    <div class="mb-4">
+
+        <h2 class="page-title">
+            Booking Management
+        </h2>
+
+        <p class="text-muted">
+            Review and manage customer purchase and rental requests.
+        </p>
+
+    </div>
+
+
+    <!-- DJANGO MESSAGES -->
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+
+                {{ message }}
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert">
+                </button>
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    <!-- STATISTICS -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+
+            <div class="stat-card">
+
+                <p class="text-muted mb-1">
+                    Total Bookings
+                </p>
+
+                <div class="stat-number">
+                    {{ total_bookings }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="stat-card">
+
+                <p class="text-muted mb-1">
+                    Pending Requests
+                </p>
+
+                <div class="stat-number">
+                    {{ pending_bookings }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="stat-card">
+
+                <p class="text-muted mb-1">
+                    Approved Requests
+                </p>
+
+                <div class="stat-number">
+                    {{ approved_bookings }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH AND FILTER -->
+    <div class="filter-card">
+
+        <h5 class="page-title mb-3">
+            Search and Filter
+        </h5>
+
+        <form method="GET">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+
+                    <input type="text"
+                           name="search"
+                           class="form-control"
+                           placeholder="Search customer or property..."
+                           value="{{ search_query }}">
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <select name="status" class="form-select">
+
+                        <option value="">
+                            All Booking Statuses
+                        </option>
+
+                        {% for value, label in status_choices %}
+
+                            <option value="{{ value }}"
+                                {% if status_filter == value %}selected{% endif %}>
+
+                                {{ label }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="col-md-2">
+
+                    <button type="submit"
+                            class="btn btn-primary w-100">
+
+                        Search
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="mt-3">
+
+                <a href="{% url 'owner_bookings' %}"
+                   class="text-decoration-none">
+
+                    Clear Filters
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- BOOKING REQUESTS -->
+    <h4 class="page-title mb-3">
+        Customer Booking Requests
+    </h4>
+
+
+    {% if bookings %}
+
+        {% for booking in bookings %}
+
+            <div class="booking-card">
+
+                <!-- PROPERTY AND STATUS -->
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+
+                    <div>
+
+                        <h5 class="property-title">
+                            {{ booking.property.title }}
+                        <div class="small text-muted">Booking Ref: {{ booking.short_reference }}</div>
+                        <a class="small" href="{% url 'booking_detail' booking.id %}">View full booking history</a>
+                        </h5>
+
+                        <p class="text-muted mb-2">
+                            {{ booking.property.address }},
+                            {{ booking.property.city }}
+                        </p>
+
+                    </div>
+
+                    <span class="status status-{{ booking.status }}">
+
+                        {{ booking.get_status_display }}
+
+                    </span>
+
+                </div>
+
+
+                <hr>
+
+
+                <!-- BOOKING DETAILS -->
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+
+                        <small class="text-muted">
+                            Customer
+                        </small>
+
+                        <p class="fw-semibold mb-0">
+                            {{ booking.customer.get_full_name|default:booking.customer.username }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <small class="text-muted">
+                            Customer Email
+                        </small>
+
+                        <p class="fw-semibold mb-0">
+                            {{ booking.customer.email }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <small class="text-muted">
+                            Booking Type
+                        </small>
+
+                        <p class="fw-semibold mb-0">
+                            {{ booking.get_booking_type_display }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <small class="text-muted">
+                            Listed Price
+                        </small>
+
+                        <p class="fw-semibold mb-0">
+                            ₹{{ booking.property.price|floatformat:2 }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <small class="text-muted">
+                            Preferred Date
+                        </small>
+
+                        <p class="fw-semibold mb-0">
+                            {{ booking.preferred_date|date:"d M Y" }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <small class="text-muted">
+                            Request Submitted
+                        </small>
+
+                        <p class="fw-semibold mb-0">
+                            {{ booking.created_at|date:"d M Y" }}
+                        </p>
+
+                    </div>
+
+
+                    {% if booking.booking_type == 'rent' %}
+
+                        <div class="col-md-4">
+
+                            <small class="text-muted">
+                                Rental Duration
+                            </small>
+
+                            <p class="fw-semibold mb-0">
+                                {{ booking.rental_duration_months }} Months
+                            {% if booking.rental_end_date %}<div>Rental ends: {{ booking.rental_end_date|date:"d M Y" }}</div>{% endif %}
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- CUSTOMER MESSAGE -->
+                {% if booking.message %}
+
+                    <div class="mt-3">
+
+                        <small class="text-muted">
+                            Customer Message
+                        </small>
+
+                        <p class="mb-0">
+                            {{ booking.message }}
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- OWNER RESPONSE -->
+                {% if booking.status == 'approved' %}
+                            <form method="post" action="{% url 'update_booking_status' booking.id %}" class="mt-2">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="completed">
+                                <input type="hidden" name="owner_response" value="Booking marked as completed.">
+                                <button class="btn btn-success btn-sm" type="submit">Mark Completed</button>
+                            </form>
+                        {% endif %}
+                        {% if booking.owner_response %}
+
+                    <div class="alert alert-info mt-3 mb-0">
+
+                        <strong>Your Previous Response:</strong>
+
+                        <p class="mb-0">
+                            {{ booking.owner_response }}
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- APPROVE OR REJECT -->
+                {% if booking.status == 'pending' %}
+
+                    <hr>
+
+                    <form method="POST"
+                          action="{% url 'update_booking_status' booking.id %}">
+
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Response to Customer
+                            </label>
+
+                            <textarea name="owner_response"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Enter your response (optional)..."></textarea>
+
+                        </div>
+
+
+                        <div class="d-flex gap-2 flex-wrap">
+
+                            <button type="submit"
+                                    name="status"
+                                    value="approved"
+                                    class="btn btn-success"
+                                    onclick="return confirm('Are you sure you want to approve this booking?');">
+
+                                Approve Booking
+
+                            </button>
+
+
+                            <button type="submit"
+                                    name="status"
+                                    value="rejected"
+                                    class="btn btn-danger"
+                                    onclick="return confirm('Are you sure you want to reject this booking?');">
+
+                                Reject Booking
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <h4 class="page-title">
+                No Booking Requests Found
+            </h4>
+
+            <p class="text-muted mt-2">
+                No customer booking requests match your search.
+            </p>
+
+            <a href="{% url 'owner_bookings' %}"
+               class="btn btn-primary mt-3">
+
+                View All Bookings
+
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

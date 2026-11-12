@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Property | EstatePro</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <style>
+        body {
+            background: #f5f7fa;
+            color: #253247;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .navbar,
+        footer {
+            background: #172b4d;
+        }
+
+        .form-container {
+            max-width: 1000px;
+        }
+
+        .form-card {
+            border: 1px solid #e5eaf0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: #172b4d;
+            color: white;
+            padding: 25px;
+        }
+
+        .form-header h3 {
+            font-weight: 700;
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #172b4d;
+            border-bottom: 1px solid #e5eaf0;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .form-control,
+        .form-select {
+            min-height: 43px;
+            border: 1px solid #dce3eb;
+            border-radius: 6px;
+        }
+
+        textarea.form-control {
+            min-height: 110px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #1e3a5f;
+            box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1);
+        }
+
+        .amenity-box {
+            background: #f8fafc;
+            border: 1px solid #e5eaf0;
+            border-radius: 8px;
+            padding: 18px;
+        }
+
+        .amenity-item {
+            padding: 10px;
+            border: 1px solid #e5eaf0;
+            border-radius: 6px;
+            background: white;
+            height: 100%;
+        }
+
+        .amenity-item .form-check-input {
+            cursor: pointer;
+        }
+
+        .amenity-item .form-check-label {
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .current-image {
+            width: 220px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 7px;
+            border: 1px solid #e5eaf0;
+        }
+
+        .btn-submit {
+            background: #1e3a5f;
+            color: white;
+            border: none;
+            min-height: 48px;
+            font-weight: 600;
+        }
+
+        .btn-submit:hover {
+            background: #142b48;
+            color: white;
+        }
+
+        .errorlist {
+            color: #dc3545;
+            font-size: 13px;
+            padding-left: 18px;
+            margin-top: 5px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar navbar-dark">
+
+        <div class="container">
+
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+                EstatePro
+            </a>
+
+            <a href="{% url 'my_properties' %}"
+               class="btn btn-outline-light btn-sm">
+                My Properties
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- MAIN FORM -->
+
+    <div class="container form-container my-5">
+
+        <div class="card form-card shadow-sm">
+
+            <div class="form-header">
+
+                <h3 class="mb-2">Edit Property</h3>
+
+                <p class="mb-0 text-white-50">
+                    Update your property information and amenities.
+                </p>
+
+            </div>
+
+
+            <div class="card-body p-4 p-md-5">
+
+                <form method="POST" enctype="multipart/form-data">
+
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+
+                        <div class="alert alert-danger">
+                            Please correct the errors below.
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- GENERAL INFORMATION -->
+
+                    <h5 class="section-title">
+                        General Information
+                    </h5>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Property Title *
+                        </label>
+
+                        {{ form.title }}
+                        {{ form.title.errors }}
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Property Type *
+                        </label>
+
+                        {{ form.property_type }}
+                        {{ form.property_type.errors }}
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Description *
+                        </label>
+
+                        {{ form.description }}
+                        {{ form.description.errors }}
+
+                    </div>
+
+
+                    <!-- PROPERTY IMAGE -->
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Property Image
+                        </label>
+
+                        {% if property.image %}
+
+                            <div class="mb-3">
+
+                                <p class="small text-muted mb-2">
+                                    Current Property Image
+                                </p>
+
+                                <img
+                                    src="{{ property.image.url }}"
+                                    alt="{{ property.title }}"
+                                    class="current-image"
+                                >
+
+                            </div>
+
+                        {% endif %}
+
+                        {{ form.image }}
+                        {{ form.image.errors }}
+
+                        <small class="text-muted">
+                            Upload a new image to replace the current image.
+                        </small>
+
+                    </div>
+
+
+                    <!-- LOCATION INFORMATION -->
+
+                    <h5 class="section-title mt-4">
+                        Location Information
+                    </h5>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Property Address *
+                        </label>
+
+                        {{ form.address }}
+                        {{ form.address.errors }}
+
+                    </div>
+
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            City *
+                        </label>
+
+                        {{ form.city }}
+                        {{ form.city.errors }}
+
+                    </div>
+
+
+                    <!-- PROPERTY DETAILS -->
+
+                    <h5 class="section-title mt-4">
+                        Property Details
+                    </h5>
+
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Property Price (₹) *
+                            </label>
+
+                            {{ form.price }}
+                            {{ form.price.errors }}
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label" for="{{ form.listing_purpose.id_for_label }}">
+                                Listing Purpose *
+                            </label>
+                            {{ form.listing_purpose }}
+                            {{ form.listing_purpose.errors }}
+
+                            <label class="form-label mt-3" for="{{ form.area_sqft.id_for_label }}">
+                                Area (Square Feet) *
+                            </label>
+                            {{ form.area_sqft }}
+                            {{ form.area_sqft.errors }}
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Bedrooms
+                            </label>
+
+                            {{ form.bedrooms }}
+                            {{ form.bedrooms.errors }}
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Bathrooms
+                            </label>
+
+                            {{ form.bathrooms }}
+                            {{ form.bathrooms.errors }}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PROPERTY AMENITIES -->
+
+                    <h5 class="section-title mt-5">
+                        Property Amenities
+                    </h5>
+
+                    <p class="text-muted small">
+                        Update the amenities available in this property.
+                    </p>
+
+
+                    <div class="amenity-box">
+
+                        <div class="row g-3">
+
+
+                            <div class="col-md-6 col-lg-3">
+                                <div class="amenity-item">
+                                    <div class="form-check">
+                                        {{ form.parking }}
+                                        <label class="form-check-label">
+                                            Parking
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6 col-lg-3">
+                                <div class="amenity-item">
+                                    <div class="form-check">
+                                        {{ form.garden }}
+                                        <label class="form-check-label">
+                                            Garden
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6 col-lg-3">
+                                <div class="amenity-item">
+                                    <div class="form-check">
+                                        {{ form.furnished }}
+                                        <label class="form-check-label">
+                                            Furnished
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6 col-lg-3">
+                                <div class="amenity-item">
+                                    <div class="form-check">
+                                        {{ form.security }}
+                                        <label class="form-check-label">
+                                            24/7 Security
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6 col-lg-3">
+                                <div class="amenity-item">
+                                    <div class="form-check">
+                                        {{ form.swimming_pool }}
+                                        <label class="form-check-label">
+                                            Swimming Pool
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6 col-lg-3">
+                                <div class="amenity-item">
+                                    <div class="form-check">
+                                        {{ form.gym }}
+                                        <label class="form-check-label">
+                                            Gym
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6 col-lg-3">
+                                <div class="amenity-item">
+                                    <div class="form-check">
+                                        {{ form.balcony }}
+                                        <label class="form-check-label">
+                                            Balcony
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6 col-lg-3">
+                                <div class="amenity-item">
+                                    <div class="form-check">
+                                        {{ form.water_supply }}
+                                        <label class="form-check-label">
+                                            Water Supply
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PROPERTY STATUS -->
+
+                    <h5 class="section-title mt-5">
+                        Property Status
+                    </h5>
+
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Current Status *
+                        </label>
+
+                        {{ form.status }}
+                        {{ form.status.errors }}
+
+                    </div>
+
+
+                    {% if form.non_field_errors %}
+
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- BUTTONS -->
+
+                    <div class="d-grid gap-2 mt-4">
+
+                        <button type="submit"
+                                class="btn btn-submit btn-lg">
+                            Update Property
+                        </button>
+
+                        <a href="{% url 'my_properties' %}"
+                           class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <footer class="text-white text-center py-3">
+
+        <p class="mb-0">
+            © 2026 EstatePro. All rights reserved.
+        </p>
+
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

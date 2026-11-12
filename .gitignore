@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+env/
+
+# Environment credentials
+.env
+
+# Database backups
+db.sqlite3
+db_backup_before_mysql.sqlite3
+estatepro_backup.json
+*.sql
+
+# Django
+staticfiles/
+*.log
+
+# IDE
+.vscode/
+.idea/
